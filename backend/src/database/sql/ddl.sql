@@ -1,4 +1,6 @@
-CREATE DATABASE expense_tracker_dev;
+-- CREATE DATABASE expense_tracker;
+
+\c expense_tracker_dev
 
 CREATE TABLE IF NOT EXISTS users(
     user_id SERIAL PRIMARY KEY,
@@ -31,3 +33,5 @@ CREATE TABLE IF NOT EXISTS expenses(
         FOREIGN KEY(user_id)
         REFERENCES users(user_id)
 );
+
+INSERT INTO users (user_id, email, username, password_hash, created) VALUES ('1', 'admin@admin.com', 'admin', '$2y$10$fa2ml1f3e5h4Ag/zp5pU.uGZzpW39OmpdgKNqgxraIabCMO3QD322', '2022-08-13');
