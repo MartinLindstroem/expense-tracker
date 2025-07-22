@@ -1,8 +1,10 @@
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Outlet, Link } from "react-router-dom";
+import { useExpenseStore } from "../store";
 
 const Layout = () => {
+  const { selectedYear } = useExpenseStore();
   return (
     <div className="flex flex-col min-h-screen w-full">
       <Header />
@@ -11,7 +13,7 @@ const Layout = () => {
           <nav className="mt-40">
             <ul className="space-y-5">
               <li>
-                <Link to="/">Home</Link>
+                <Link to={`/expenses/${selectedYear}`}>Expenses</Link>
               </li>
               <li>
                 <Link to="/dashboard">Dashboard</Link>
