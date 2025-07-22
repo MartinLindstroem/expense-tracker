@@ -1,6 +1,9 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { callApi } from "./utils/callApi";
+import { convertExpenseMapToObject } from "./utils/convertMap";
+import months from "./helpers/months";
+import { expenses } from "./helpers/expenses";
 
 interface User {
   email: string;
@@ -13,7 +16,7 @@ interface ApiResponse {
   user?: User;
 }
 
-interface Expense {
+export interface Expense {
   id: number;
   name: string;
   amount: number;
@@ -21,9 +24,15 @@ interface Expense {
   date: string;
 }
 
-// interface MonthlyExpenses {
-//   expense: Expense[];
-// }
+export interface Expenses {
+  [year: string]: {
+    [month: string]: {
+      expenses: Expense[];
+      totalsByCategory: { [key: string]: number };
+      total: number;
+    };
+  };
+}
 
 interface Category {
   id: number;
@@ -40,7 +49,7 @@ interface AuthState {
 
 interface ExpenseState {
   selectedYear: number;
-  expenses: Expense[];
+  expenses: Expenses;
   categories: Category[];
   getExpenses: (year: string) => Promise<void>;
   // setSelectedYear: (year: number) => void;
@@ -95,35 +104,50 @@ export const useExpenseStore = create<ExpenseState>()(
     persist(
       (set) => ({
         selectedYear: new Date().getFullYear(),
-        expenses: [],
+        expenses: {},
         categories: [],
         getExpenses: async (year: string) => {
-          let categoryData: any[] = [];
           try {
             const expensesResponse = await callApi(`expenses/${year}`, "GET");
             const categoriesResponse = await callApi("categories", "GET");
-            console.log("RESPONSE", expensesResponse);
+
+            const yearObject: Expenses[string] = {}; // Will hold all months for that year
+            const categoryData: Category[] =
+              categoriesResponse.status === 200 ? categoriesResponse.data : [];
 
             if (expensesResponse.status === 200) {
-              set({ expenses: expensesResponse.data as Expense[] });
-            }
+              const allExpenses: Expense[] = expensesResponse.data;
 
-            console.log("EXPENSES", expensesResponse.data);
-            categoryData = categoriesResponse.data;
-            console.log("CATS", categoryData);
+              for (const month of months) {
+                const monthIndex = months.indexOf(month);
+                const monthName = month.toLowerCase();
 
-            console.log(expensesResponse.data[0].category);
+                const monthlyExpenses = allExpenses.filter(
+                  (expense) => new Date(expense.date).getMonth() === monthIndex
+                );
 
-            for (let i = 0; i < expensesResponse.data.length; i++) {
-              let categoryId = expensesResponse.data[i].category;
+                let monthlyTotal = 0;
+                const monthlyTotalsByCategory: { [key: string]: number } = {};
 
-              console.log(categoryId);
-            }
+                for (const expense of monthlyExpenses) {
+                  monthlyTotal += expense.amount;
+                  monthlyTotalsByCategory[expense.category] =
+                    (monthlyTotalsByCategory[expense.category] || 0) + expense.amount;
+                }
 
-            if (categoriesResponse.status === 200) {
-              // console.log("CATS", categoriesResponse.data);
+                yearObject[monthName] = {
+                  expenses: monthlyExpenses,
+                  total: monthlyTotal,
+                  totalsByCategory: monthlyTotalsByCategory,
+                };
+              }
 
-              set({ categories: categoriesResponse.data as Category[] });
+              set((state) => ({
+                expenses: {
+                  ...state.expenses,
+                  [year]: yearObject,
+                },
+              }));
             }
           } catch (error) {
             console.error("Fetch user data error:", error);
