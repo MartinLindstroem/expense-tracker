@@ -9,8 +9,7 @@ const ExpenseMonth = () => {
     monthlyExpenses: any[];
     totalsByCategory: { [key: string]: number };
   };
-  console.log("monthlyExpenses", monthlyExpenses);
-  console.log("totalsByCategory", totalsByCategory);
+
   return (
     <div className="flex-col w-full h-full">
       <h1 className="text-3xl font-bold mb-12">{month}</h1>

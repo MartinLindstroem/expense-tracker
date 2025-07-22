@@ -3,7 +3,6 @@ import { devtools, persist } from "zustand/middleware";
 import { callApi } from "./utils/callApi";
 import { convertExpenseMapToObject } from "./utils/convertMap";
 import months from "./helpers/months";
-import { expenses } from "./helpers/expenses";
 
 interface User {
   email: string;
@@ -52,7 +51,8 @@ interface ExpenseState {
   expenses: Expenses;
   categories: Category[];
   getExpenses: (year: string) => Promise<void>;
-  // setSelectedYear: (year: number) => void;
+  getCategories: () => Promise<void>;
+  setSelectedYear: (year: number) => void;
   // addExpense: (expense: Expense) => Promise<ApiResponse | void>;
   // updateExpense: (expense: Expense) => Promise<ApiResponse | void>;
   // deleteExpense: (id: number) => Promise<ApiResponse | void>;
@@ -102,18 +102,14 @@ export const useAuthStore = create<AuthState>()(
 export const useExpenseStore = create<ExpenseState>()(
   devtools(
     persist(
-      (set) => ({
+      (set, get) => ({
         selectedYear: new Date().getFullYear(),
         expenses: {},
         categories: [],
         getExpenses: async (year: string) => {
           try {
             const expensesResponse = await callApi(`expenses/${year}`, "GET");
-            const categoriesResponse = await callApi("categories", "GET");
-
-            const yearObject: Expenses[string] = {}; // Will hold all months for that year
-            const categoryData: Category[] =
-              categoriesResponse.status === 200 ? categoriesResponse.data : [];
+            const yearObject: Expenses[string] = {};
 
             if (expensesResponse.status === 200) {
               const allExpenses: Expense[] = expensesResponse.data;
@@ -153,10 +149,22 @@ export const useExpenseStore = create<ExpenseState>()(
             console.error("Fetch user data error:", error);
           }
         },
-        // setSelectedYear: (year: number) => {
-        //   set({ selectedYear: year });
-        //   console.log("Selected year:", year);
-        // },
+        getCategories: async () => {
+          try {
+            const response = await callApi("categories", "GET");
+            if (response.status === 200) {
+              const categories = response.data;
+              set({ categories: categories });
+            }
+          } catch (error) {
+            console.error("Fetch categories error:", error);
+          }
+        },
+        setSelectedYear: async (year: number) => {
+          set({ selectedYear: year });
+          await get().getExpenses(year.toString());
+          console.log("Selected year:", year);
+        },
       }),
       { name: "expenseStore" }
     )

@@ -13,10 +13,12 @@ import ExpenseMonth from "./pages/ExpenseMonth";
 import { useAuthStore, useExpenseStore } from "./store";
 
 function App() {
-  const { getExpenses, selectedYear } = useExpenseStore();
+  const { getExpenses, getCategories, selectedYear, setSelectedYear } = useExpenseStore();
 
   useEffect(() => {
+    setSelectedYear(new Date().getFullYear());
     getExpenses(selectedYear.toString());
+    getCategories();
   }, []);
 
   return (

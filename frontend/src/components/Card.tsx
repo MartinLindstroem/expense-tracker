@@ -8,13 +8,13 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = ({ month }) => {
   const { selectedYear, categories, expenses } = useExpenseStore();
-  const monthlyExpenses = expenses[selectedYear][month].expenses;
-  const totalsByCategory = expenses[selectedYear][month].totalsByCategory;
-  const total = expenses[selectedYear][month].total;
+  const monthlyExpenses = expenses[selectedYear][month]?.expenses || [];
+  const totalsByCategory = expenses[selectedYear][month]?.totalsByCategory || {};
+  const total = expenses[selectedYear][month]?.total;
 
   return (
     <Link
-      to={`/expenses/${selectedYear}/${month.toLowerCase()}`}
+      to={`/expenses/${selectedYear}/${month?.toLowerCase()}`}
       state={{
         month: month,
         monthlyExpenses: monthlyExpenses,

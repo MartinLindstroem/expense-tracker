@@ -7,10 +7,7 @@ interface CategoryProps {
 
 const CategoryContainer: React.FC<CategoryProps> = ({ month }) => {
   const { categories, expenses, selectedYear } = useExpenseStore();
-  const totalsByCategory = expenses[selectedYear][month].totalsByCategory;
-  console.log("CATEGORIES", categories);
-  console.log("EXPENSES", expenses[selectedYear][month].expenses);
-  console.log("totalsByCategory", totalsByCategory);
+  const totalsByCategory = expenses?.selectedYear?.month.totalsByCategory || {};
 
   return (
     <div>
