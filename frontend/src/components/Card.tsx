@@ -8,6 +8,9 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = ({ month }) => {
   const { selectedYear, categories, expenses } = useExpenseStore();
+  if (!expenses[selectedYear]) {
+    return null;
+  }
   const monthlyExpenses = expenses[selectedYear][month]?.expenses || [];
   const totalsByCategory = expenses[selectedYear][month]?.totalsByCategory || {};
   const total = expenses[selectedYear][month]?.total;
