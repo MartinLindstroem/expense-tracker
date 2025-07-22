@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
 import "./App.css";
 import Home from "./pages/Home";
+import Expenses from "./pages/Expenses";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import NoPage from "./pages/NoPage";
@@ -27,7 +28,8 @@ function App() {
           <Route path="login" element={<Login />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="profile" element={<Profile />} />
-          <Route path="expenses/:month" element={<ExpenseMonth />} />
+          <Route path="expenses/:year" element={<Expenses />} />
+          <Route path="expenses/:year/:month" element={<ExpenseMonth />} />
           <Route path="*" element={<NoPage />} />
         </Route>
       </Routes>
