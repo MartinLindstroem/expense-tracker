@@ -19,6 +19,7 @@ export interface Expense {
   id: number;
   name: string;
   amount: number;
+  notes: string;
   category: string;
   date: string;
 }
@@ -48,11 +49,13 @@ interface AuthState {
 
 interface ExpenseState {
   selectedYear: number;
+  selectedMonth: string;
   expenses: Expenses;
   categories: Category[];
   getExpenses: (year: string) => Promise<void>;
   getCategories: () => Promise<void>;
   setSelectedYear: (year: number) => void;
+  setSelectedMonth: (month: string) => void;
   // addExpense: (expense: Expense) => Promise<ApiResponse | void>;
   // updateExpense: (expense: Expense) => Promise<ApiResponse | void>;
   // deleteExpense: (id: number) => Promise<ApiResponse | void>;
@@ -104,6 +107,7 @@ export const useExpenseStore = create<ExpenseState>()(
     persist(
       (set, get) => ({
         selectedYear: new Date().getFullYear(),
+        selectedMonth: "",
         expenses: {},
         categories: [],
         getExpenses: async (year: string) => {
@@ -164,6 +168,10 @@ export const useExpenseStore = create<ExpenseState>()(
           set({ selectedYear: year });
           await get().getExpenses(year.toString());
           console.log("Selected year:", year);
+        },
+        setSelectedMonth: async (month: string) => {
+          set({ selectedMonth: month });
+          console.log("Selected month:", month);
         },
       }),
       { name: "expenseStore" }
