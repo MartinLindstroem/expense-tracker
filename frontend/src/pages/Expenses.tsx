@@ -10,13 +10,19 @@ const Expenses = () => {
     <div className="w-full flex-col justify-center items-center">
       <div className="flex items-center justify-center gap-4">
         <Link to={`/expenses/${selectedYear - 1}`}>
-          <button className="btn" onClick={() => setSelectedYear(selectedYear - 1)}>
+          <button
+            className="btn bg-transparent border-0 shadow-none hover:bg-transparent hover:text-primary"
+            onClick={() => setSelectedYear(selectedYear - 1)}
+          >
             <CaretLeft size={32} />
           </button>
         </Link>
         <h1 className="text-5xl font-bold">{selectedYear}</h1>
         <Link to={`/expenses/${selectedYear + 1}`}>
-          <button className="btn" onClick={() => setSelectedYear(selectedYear + 1)}>
+          <button
+            className="btn bg-transparent border-0 shadow-none hover:bg-transparent hover:text-primary"
+            onClick={() => setSelectedYear(selectedYear + 1)}
+          >
             <CaretRight size={32} />
           </button>
         </Link>
