@@ -23,7 +23,7 @@ export const getExpensesFromYear = async (userId: string, year: string) => {
   const dec = new Date(parseInt(year), 11, 31);
 
   const expenses = await pool.query(
-    `SELECT e.expense_id as id, e.expense_name as name, e.expense_amount as amount, c.category_name as category, e.expense_date as date
+    `SELECT e.expense_id as id, e.expense_name as name, e.expense_amount as amount, e.expense_notes as notes, c.category_name as category, e.expense_date as date
       FROM expenses e
       JOIN categories c ON e.expense_category = c.category_id
       WHERE e.user_id = $1
@@ -38,6 +38,7 @@ export const createExpense = async (
   userId: string,
   expenseName: string,
   expenseAmount: string,
+  expenseNotes: string,
   dateString: string,
   expenseCategory: string
 ) => {
@@ -52,8 +53,8 @@ export const createExpense = async (
     }
 
     await pool.query(
-      `INSERT INTO expenses (user_id, expense_name, expense_amount, expense_date, expense_category) VALUES ($1, $2, $3, $4, $5)`,
-      [userId, expenseName, expenseAmount, dateString, expenseCategory]
+      `INSERT INTO expenses (user_id, expense_name, expense_amount, expense_notes, expense_date, expense_category) VALUES ($1, $2, $3, $4, $5, $6)`,
+      [userId, expenseName, expenseAmount, expenseNotes, dateString, expenseCategory]
     );
   } catch (error: any) {
     logger.error("Error creating expense", { service: "expense-service", error: error.detail });
@@ -66,6 +67,7 @@ export const updateExpense = async (
   expenseId: string,
   expenseName: string,
   expenseAmount: string,
+  expenseNotes: string,
   dateString: string,
   expenseCategory: string
 ) => {
@@ -80,8 +82,8 @@ export const updateExpense = async (
   }
 
   await pool.query(
-    `UPDATE expenses SET expense_name=$1, expense_amount=$2, expense_date=$3, expense_category=$4 WHERE expense_id = $5`,
-    [expenseName, expenseAmount, dateString, expenseCategory, expenseId]
+    `UPDATE expenses SET expense_name=$1, expense_amount=$2, expense_notes=$3, expense_date=$4, expense_category=$5 WHERE expense_id = $6`,
+    [expenseName, expenseAmount, expenseNotes, dateString, expenseCategory, expenseId]
   );
 };
 

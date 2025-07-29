@@ -24,8 +24,6 @@ export const getExpensesFromYearController = async (
   next: NextFunction
 ) => {
   try {
-    console.log("hello");
-
     const result = await getExpensesFromYear(req.body.user.userId, req.params.year);
 
     res.status(200).json({ data: result.rows });
@@ -56,6 +54,7 @@ export const createExpenseController = async (req: Request, res: Response, next:
       req.body.user.userId,
       req.body.name,
       req.body.amount,
+      req.body.notes,
       req.body.date,
       req.body.category
     );
@@ -72,6 +71,7 @@ export const updateExpenseController = async (req: Request, res: Response, next:
       req.body.id,
       req.body.name,
       req.body.amount,
+      req.body.notes,
       req.body.date,
       req.body.category
     );

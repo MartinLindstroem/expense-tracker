@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS expenses(
     user_id INTEGER NOT NULL,
     expense_name VARCHAR(50) NOT NULL,
     expense_amount INTEGER NOT NULL,
+    expense_notes VARCHAR(200),
     expense_date DATE NOT NULL,
     expense_category INT NOT NULL,
     CONSTRAINT expense_category
