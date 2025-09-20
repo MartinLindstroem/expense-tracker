@@ -15,12 +15,12 @@ expenseRouter.get("/", authMiddleware, getAllExpensesController);
 
 expenseRouter.get("/:year", authMiddleware, getExpensesFromYearController);
 
-expenseRouter.get("/:userId/:month/:year", getExpensesForMonthAndYearController);
+expenseRouter.get("/:userId/:month/:year", authMiddleware, getExpensesForMonthAndYearController);
 
 expenseRouter.post("/create", authMiddleware, createExpenseController);
 
-expenseRouter.put("/update", updateExpenseController);
+expenseRouter.put("/update", authMiddleware, updateExpenseController);
 
-expenseRouter.delete("/delete", deleteExpenseController);
+expenseRouter.delete("/delete", authMiddleware, deleteExpenseController);
 
 export default expenseRouter;

@@ -67,16 +67,22 @@ export const createExpenseController = async (req: Request, res: Response, next:
 
 export const updateExpenseController = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    await updateExpense(
-      req.body.id,
+    const userId = req.body.user.userId;
+    const result = await updateExpense(
       req.body.name,
       req.body.amount,
       req.body.notes,
       req.body.date,
-      req.body.category
+      req.body.category,
+      req.body.id,
+      userId
     );
 
-    res.status(201).json({ data: "Expense updated" });
+    if (result === true) {
+      res.status(200).json({ data: "Expense updated" });
+    } else {
+      res.status(404).json({ data: "Expense not found" });
+    }
   } catch (error) {
     next(error);
   }
@@ -84,9 +90,15 @@ export const updateExpenseController = async (req: Request, res: Response, next:
 
 export const deleteExpenseController = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    await deleteExpense(req.body.id);
+    const userId = req.body.user.userId;
 
-    res.status(200).json({ data: "Expense deleted" });
+    const result = await deleteExpense(req.body.id, userId);
+
+    if (result === true) {
+      res.status(200).json({ data: "Expense deleted" });
+    } else {
+      res.status(404).json({ data: "Expense not found" });
+    }
   } catch (error) {
     next(error);
   }

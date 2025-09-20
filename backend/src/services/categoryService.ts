@@ -29,10 +29,15 @@ export const updateCategory = async (
     throw new HttpException(400, "Invalid data given");
   }
 
-  await pool.query(
+  const res = await pool.query(
     `UPDATE categories SET category_name=$1 WHERE category_id = $2 AND user_id = $3`,
     [newCategoryName, categoryId, userId]
   );
+
+  if (res.rowCount && res.rowCount > 0) {
+    return true;
+  }
+  return false;
 };
 
 export const deleteCategory = async (categoryId: string, userId: string) => {
@@ -40,8 +45,13 @@ export const deleteCategory = async (categoryId: string, userId: string) => {
     throw new HttpException(400, "Invalid data given");
   }
 
-  await pool.query(`DELETE FROM categories WHERE category_id = $1 AND user_id = $2`, [
+  const res = await pool.query(`DELETE FROM categories WHERE category_id = $1 AND user_id = $2`, [
     categoryId,
     userId,
   ]);
+
+  if (res.rowCount && res.rowCount > 0) {
+    return true;
+  }
+  return false;
 };

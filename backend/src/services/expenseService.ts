@@ -58,18 +58,18 @@ export const createExpense = async (
     );
   } catch (error: any) {
     logger.error("Error creating expense", { service: "expense-service", error: error.detail });
-    // throw error;
     throw new HttpException(500, "Error creating expense");
   }
 };
 
 export const updateExpense = async (
-  expenseId: string,
   expenseName: string,
   expenseAmount: string,
   expenseNotes: string,
   dateString: string,
-  expenseCategory: string
+  expenseCategory: string,
+  expenseId: string,
+  userId: string
 ) => {
   const date = new Date(dateString);
   if (
@@ -81,16 +81,29 @@ export const updateExpense = async (
     throw new HttpException(400, "Invalid data given");
   }
 
-  await pool.query(
-    `UPDATE expenses SET expense_name=$1, expense_amount=$2, expense_notes=$3, expense_date=$4, expense_category=$5 WHERE expense_id = $6`,
-    [expenseName, expenseAmount, expenseNotes, dateString, expenseCategory, expenseId]
+  const res = await pool.query(
+    `UPDATE expenses SET expense_name=$1, expense_amount=$2, expense_notes=$3, expense_date=$4, expense_category=$5 WHERE expense_id = $6 AND user_id = $7`,
+    [expenseName, expenseAmount, expenseNotes, dateString, expenseCategory, expenseId, userId]
   );
+
+  if (res.rowCount && res.rowCount > 0) {
+    return true;
+  }
+  return false;
 };
 
-export const deleteExpense = async (expenseId: string) => {
+export const deleteExpense = async (expenseId: string, userId: number) => {
   if (isNaN(parseInt(expenseId))) {
     throw new HttpException(400, "Invalid data given");
   }
 
-  await pool.query(`DELETE FROM expenses WHERE expense_id = $1`, [expenseId]);
+  const res = await pool.query(`DELETE FROM expenses WHERE expense_id = $1 AND user_id = $2`, [
+    expenseId,
+    userId,
+  ]);
+
+  if (res.rowCount && res.rowCount > 0) {
+    return true;
+  }
+  return false;
 };
