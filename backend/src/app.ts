@@ -10,8 +10,6 @@ import { HttpException } from "./utils/customError";
 import cookieParser from "cookie-parser";
 import logger from "./logger/logger";
 
-console.log("CLIENT_URL", process.env.CLIENT_URL);
-
 const app: Express = express();
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(cookieParser());
